@@ -10,7 +10,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   Save,
-  Loader2
+  Loader2,
+  Sparkles
 } from 'lucide-react';
 import SpreadsheetRow from './components/SpreadsheetRow';
 import { Participant } from './types';
@@ -67,7 +68,6 @@ const App: React.FC = () => {
 
   const initializeEmptyData = () => {
     // Initial load: Create 50 rows to start, users can add more.
-    // Creating 1000 objects in memory is fine, rendering them all at once is the bottleneck.
     const initialRows: Participant[] = Array.from({ length: 50 }).map(() => ({
       id: uuidv4(),
       name: '',
@@ -77,8 +77,7 @@ const App: React.FC = () => {
     setData(initialRows);
   };
 
-  // Persist Data (Debounced roughly by just saving on specific actions or interval could be better, 
-  // but for simplicity we save on effect with a small timeout or just manual save for massive lists)
+  // Persist Data 
   useEffect(() => {
     if (!loading) {
         const timeout = setTimeout(() => {
@@ -116,9 +115,7 @@ const App: React.FC = () => {
       whatsapp: '',
       weeks: [false, false, false, false, false]
     };
-    // Add to beginning or end? Usually end for spreadsheets.
     setData(prev => [...prev, newRow]);
-    // Jump to last page
     const newTotal = data.length + 1;
     setCurrentPage(Math.ceil(newTotal / ITEMS_PER_PAGE));
   };
@@ -139,7 +136,6 @@ const App: React.FC = () => {
 
   const handleGenerateMessage = async (participant: Participant) => {
     setGeneratedMessage(null); // Clear previous
-    // Show a loading toast or modal would be ideal, but we'll use a simple alert for MVP or just setting state
     const msg = await generateMessageForParticipant(participant);
     setGeneratedMessage({ id: participant.id, text: msg });
   };
@@ -169,42 +165,42 @@ const App: React.FC = () => {
     return { count: active.length, percentage };
   }, [data]);
 
-  if (loading) return <div className="flex items-center justify-center h-screen bg-slate-50"><Loader2 className="animate-spin text-blue-600" size={48} /></div>;
+  if (loading) return <div className="flex items-center justify-center h-screen bg-indigo-50"><Loader2 className="animate-spin text-purple-600" size={48} /></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+    <div className="min-h-screen bg-indigo-50/50 flex flex-col text-slate-900 font-sans">
       
-      {/* Navbar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      {/* Navbar - Vivid Gradient */}
+      <header className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white shadow-md sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 h-18 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-                <div className="bg-blue-600 p-2 rounded-lg text-white">
-                    <Users size={20} />
+                <div className="bg-white/20 backdrop-blur-sm p-2 rounded-xl text-white shadow-inner">
+                    <Sparkles size={24} className="text-yellow-300" />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800 tracking-tight">Estratégia HUBX</h1>
-                    <p className="text-xs text-slate-500 hidden sm:block">Planilha de Gestão Financeira</p>
+                    <h1 className="text-2xl font-extrabold tracking-tight text-white drop-shadow-sm">Estratégia HUBX</h1>
+                    <p className="text-xs text-indigo-100 font-medium opacity-90">Gestão de Pagamentos</p>
                 </div>
             </div>
 
-            <div className="flex items-center gap-3">
-                 <div className="hidden md:flex flex-col items-end mr-4">
-                    <span className="text-xs text-slate-500 uppercase font-semibold">Participantes</span>
-                    <span className="text-sm font-bold text-slate-800">{stats.count} Ativos</span>
+            <div className="flex items-center gap-4">
+                 <div className="hidden md:flex flex-col items-end mr-2 bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">
+                    <span className="text-[10px] text-indigo-100 uppercase font-bold tracking-wider">Participantes</span>
+                    <span className="text-lg font-bold text-white">{stats.count}</span>
                 </div>
-                 <div className="hidden md:flex flex-col items-end mr-4">
-                    <span className="text-xs text-slate-500 uppercase font-semibold">Arrecadação</span>
-                    <span className={`text-sm font-bold ${stats.percentage > 80 ? 'text-green-600' : 'text-orange-500'}`}>
-                        {stats.percentage}% Pago
+                 <div className="hidden md:flex flex-col items-end mr-2 bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm border border-white/10">
+                    <span className="text-[10px] text-indigo-100 uppercase font-bold tracking-wider">Arrecadação</span>
+                    <span className={`text-lg font-bold ${stats.percentage > 80 ? 'text-emerald-300' : 'text-yellow-300'}`}>
+                        {stats.percentage}%
                     </span>
                 </div>
                 
                 <button 
                     onClick={handleAnalyze}
                     disabled={isAnalyzing}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium disabled:opacity-50"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white text-violet-700 rounded-full hover:bg-violet-50 hover:shadow-lg transition-all text-sm font-bold shadow-md disabled:opacity-70 transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                    {isAnalyzing ? <Loader2 className="animate-spin" size={16} /> : <BrainCircuit size={16} />}
+                    {isAnalyzing ? <Loader2 className="animate-spin" size={18} /> : <BrainCircuit size={18} />}
                     <span className="hidden sm:inline">IA Analisar</span>
                 </button>
             </div>
@@ -216,8 +212,8 @@ const App: React.FC = () => {
         
         {/* Toolbar */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="relative max-w-md w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <div className="relative max-w-md w-full group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-indigo-400 group-focus-within:text-violet-600 transition-colors" size={18} />
                 <input 
                     type="text" 
                     placeholder="Buscar por nome ou whatsapp..." 
@@ -226,23 +222,23 @@ const App: React.FC = () => {
                         setSearchTerm(e.target.value);
                         setCurrentPage(1);
                     }}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm text-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-indigo-200 rounded-xl focus:ring-4 focus:ring-violet-200 focus:border-violet-400 outline-none shadow-sm text-sm transition-all text-slate-700"
                 />
             </div>
             <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-                <button onClick={handleAddRow} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors text-sm font-medium shadow-sm whitespace-nowrap">
-                    <Plus size={16} />
-                    Adicionar Linha
+                <button onClick={handleAddRow} className="flex items-center gap-1.5 px-4 py-2.5 bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors text-sm font-semibold shadow-md shadow-violet-200 whitespace-nowrap">
+                    <Plus size={18} />
+                    Adicionar
                 </button>
-                <button onClick={handleClearEmpty} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-sm font-medium shadow-sm whitespace-nowrap">
-                    <Trash size={16} />
-                    Limpar Vazios
+                <button onClick={handleClearEmpty} className="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-rose-200 text-rose-600 rounded-xl hover:bg-rose-50 hover:border-rose-300 transition-colors text-sm font-medium shadow-sm whitespace-nowrap">
+                    <Trash size={18} />
+                    Limpar
                 </button>
                 <button 
                   onClick={() => alert("Função de exportação CSV seria implementada aqui.")}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors text-sm font-medium shadow-sm whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-indigo-200 text-indigo-700 rounded-xl hover:bg-indigo-50 hover:border-indigo-300 transition-colors text-sm font-medium shadow-sm whitespace-nowrap"
                 >
-                    <Download size={16} />
+                    <Download size={18} />
                     Exportar
                 </button>
             </div>
@@ -250,45 +246,49 @@ const App: React.FC = () => {
 
         {/* AI Analysis Result Panel */}
         {analysisResult && (
-            <div className="mb-6 bg-white p-6 rounded-xl shadow-sm border border-purple-100 relative animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="mb-6 bg-gradient-to-br from-white to-purple-50 p-6 rounded-2xl shadow-lg border border-purple-100 relative animate-in fade-in slide-in-from-top-4 duration-500 ring-1 ring-purple-100">
                 <div className="flex items-center gap-2 mb-4 text-purple-700">
-                    <BrainCircuit size={20} />
-                    <h3 className="font-bold text-lg">Relatório de Estratégia</h3>
+                    <div className="bg-purple-100 p-2 rounded-lg">
+                        <BrainCircuit size={20} />
+                    </div>
+                    <h3 className="font-bold text-lg">Insights da Inteligência Artificial</h3>
                 </div>
-                <div className="prose prose-sm prose-purple max-w-none text-slate-600">
+                <div className="prose prose-sm prose-purple max-w-none text-slate-600 bg-white/50 p-4 rounded-xl border border-purple-100/50">
                     <ReactMarkdown>{analysisResult}</ReactMarkdown>
                 </div>
                 <button 
                     onClick={() => setAnalysisResult(null)}
-                    className="absolute top-4 right-4 text-slate-300 hover:text-slate-500"
+                    className="absolute top-4 right-4 text-purple-300 hover:text-purple-500 transition-colors"
                 >
                     <span className="sr-only">Fechar</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         )}
 
-        {/* Generated Message Modal (Simple inline implementation for speed) */}
+        {/* Generated Message Modal */}
         {generatedMessage && (
-             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-in zoom-in duration-200">
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Mensagem Sugerida</h3>
-                    <div className="bg-slate-100 p-4 rounded-lg text-slate-700 text-sm mb-4 whitespace-pre-wrap">
+             <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-900/40 backdrop-blur-sm p-4">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in zoom-in duration-200 border border-white/20">
+                    <h3 className="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <span className="text-2xl">💬</span> Sugestão de Mensagem
+                    </h3>
+                    <div className="bg-indigo-50 p-5 rounded-xl text-slate-700 text-sm mb-6 whitespace-pre-wrap border border-indigo-100 leading-relaxed shadow-inner">
                         {generatedMessage.text}
                     </div>
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-3">
                         <button 
                             onClick={() => setGeneratedMessage(null)}
-                            className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium"
+                            className="px-5 py-2.5 text-slate-500 hover:bg-slate-100 rounded-xl text-sm font-semibold transition-colors"
                         >
-                            Fechar
+                            Cancelar
                         </button>
                         <button 
                             onClick={() => {
                                 navigator.clipboard.writeText(generatedMessage.text);
                                 alert("Copiado para área de transferência!");
                             }}
-                            className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg text-sm font-medium"
+                            className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 rounded-xl text-sm font-bold shadow-md transform hover:-translate-y-0.5 transition-all"
                         >
                             Copiar Texto
                         </button>
@@ -298,24 +298,24 @@ const App: React.FC = () => {
         )}
 
         {/* Table Container */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col flex-1 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl shadow-indigo-100/50 border border-indigo-100 flex flex-col flex-1 overflow-hidden">
             {/* Table Header */}
-            <div className="flex items-center bg-slate-100 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none">
-                <div className="w-12 text-center py-3">#</div>
-                <div className="flex-1 px-3 py-3 border-r border-slate-200">Nome</div>
-                <div className="w-40 md:w-48 px-3 py-3 border-r border-slate-200">WhatsApp</div>
-                <div className="w-56 md:w-80 border-r border-slate-200 flex">
-                   <div className="flex-1 text-center py-3 border-r border-slate-200 bg-slate-100">Sem 1</div>
-                   <div className="flex-1 text-center py-3 border-r border-slate-200 bg-slate-100">Sem 2</div>
-                   <div className="flex-1 text-center py-3 border-r border-slate-200 bg-slate-100">Sem 3</div>
-                   <div className="flex-1 text-center py-3 border-r border-slate-200 bg-slate-100">Sem 4</div>
-                   <div className="flex-1 text-center py-3 bg-slate-100">Sem 5</div>
+            <div className="flex items-center bg-indigo-50/80 border-b border-indigo-100 text-xs font-bold text-indigo-800 uppercase tracking-wider select-none backdrop-blur-sm">
+                <div className="w-12 text-center py-4 text-indigo-400">#</div>
+                <div className="flex-1 px-4 py-4 border-r border-orange-300">Participante</div>
+                <div className="w-40 md:w-48 px-4 py-4 border-r border-orange-300">WhatsApp</div>
+                <div className="w-56 md:w-80 border-r border-orange-300 flex">
+                   <div className="flex-1 text-center py-4 border-r border-orange-300">Sem 1</div>
+                   <div className="flex-1 text-center py-4 border-r border-orange-300">Sem 2</div>
+                   <div className="flex-1 text-center py-4 border-r border-orange-300">Sem 3</div>
+                   <div className="flex-1 text-center py-4 border-r border-orange-300">Sem 4</div>
+                   <div className="flex-1 text-center py-4">Sem 5</div>
                 </div>
-                <div className="w-24 text-center py-3">Status</div>
+                <div className="w-24 text-center py-4">Status</div>
             </div>
 
             {/* Scrollable List */}
-            <div className="overflow-y-auto flex-1 bg-white">
+            <div className="overflow-y-auto flex-1 bg-white custom-scrollbar">
                 {paginatedData.length > 0 ? (
                     paginatedData.map((participant, idx) => (
                         <SpreadsheetRow 
@@ -328,46 +328,47 @@ const App: React.FC = () => {
                         />
                     ))
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-64 text-slate-400">
-                        <p>Nenhum participante encontrado.</p>
-                        <button onClick={handleAddRow} className="mt-2 text-blue-600 hover:underline">Adicionar novo</button>
+                    <div className="flex flex-col items-center justify-center h-64 text-indigo-300">
+                        <Users size={48} className="mb-4 opacity-50" />
+                        <p className="font-medium">Nenhum participante encontrado.</p>
+                        <button onClick={handleAddRow} className="mt-2 text-violet-600 hover:text-violet-800 font-semibold underline decoration-2 decoration-violet-200 hover:decoration-violet-500 transition-all">Adicionar novo participante</button>
                     </div>
                 )}
                 
-                {/* Spacer to allow scrolling past bottom easily */}
-                <div className="h-12"></div>
+                {/* Spacer */}
+                <div className="h-12 bg-gradient-to-t from-white to-transparent"></div>
             </div>
 
             {/* Pagination Footer */}
-            <div className="border-t border-slate-200 bg-slate-50 p-2 flex items-center justify-between text-xs sm:text-sm">
-                <div className="text-slate-500 pl-2">
-                    Mostrando {paginatedData.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} até {Math.min(currentPage * ITEMS_PER_PAGE, filteredData.length)} de {filteredData.length} registros
+            <div className="border-t border-indigo-100 bg-indigo-50/50 p-3 flex items-center justify-between text-xs sm:text-sm">
+                <div className="text-indigo-600 pl-2 font-medium">
+                    Mostrando {paginatedData.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} - {Math.min(currentPage * ITEMS_PER_PAGE, filteredData.length)} de <span className="font-bold">{filteredData.length}</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="p-1.5 rounded-md hover:bg-white border border-transparent hover:border-slate-200 disabled:opacity-30 disabled:hover:bg-transparent"
+                        className="p-2 rounded-lg hover:bg-white text-indigo-700 disabled:opacity-30 disabled:hover:bg-transparent transition-all shadow-sm disabled:shadow-none"
                     >
-                        <ChevronLeft size={16} />
+                        <ChevronLeft size={18} />
                     </button>
-                    <span className="px-2 font-medium text-slate-700">
-                        Página {currentPage} de {Math.max(1, totalPages)}
+                    <span className="px-3 py-1 bg-white rounded-lg shadow-sm font-bold text-indigo-800 border border-indigo-100">
+                        {currentPage} / {Math.max(1, totalPages)}
                     </span>
                     <button 
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages || totalPages === 0}
-                        className="p-1.5 rounded-md hover:bg-white border border-transparent hover:border-slate-200 disabled:opacity-30 disabled:hover:bg-transparent"
+                        className="p-2 rounded-lg hover:bg-white text-indigo-700 disabled:opacity-30 disabled:hover:bg-transparent transition-all shadow-sm disabled:shadow-none"
                     >
-                        <ChevronRight size={16} />
+                        <ChevronRight size={18} />
                     </button>
                 </div>
             </div>
         </div>
         
         {/* Helper hint */}
-        <div className="mt-2 text-center text-xs text-slate-400">
-            Dica: Os dados são salvos automaticamente no seu navegador.
+        <div className="mt-3 text-center text-xs font-medium text-indigo-300">
+            Dica: Seus dados são salvos automaticamente no navegador.
         </div>
       </main>
     </div>
