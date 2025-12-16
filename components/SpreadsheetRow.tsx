@@ -27,7 +27,7 @@ const SpreadsheetRow: React.FC<SpreadsheetRowProps> = ({
         {index + 1}
       </div>
 
-      {/* Name Input */}
+      {/* Name Input - Orange Border */}
       <div className="flex-1 min-w-[200px] border-r border-orange-200">
         <input
           type="text"
@@ -38,7 +38,7 @@ const SpreadsheetRow: React.FC<SpreadsheetRowProps> = ({
         />
       </div>
 
-      {/* WhatsApp Input */}
+      {/* WhatsApp Input - Orange Border */}
       <div className="w-40 md:w-48 flex-shrink-0 border-r border-orange-200 relative group/input">
         <input
           type="tel"
@@ -58,7 +58,7 @@ const SpreadsheetRow: React.FC<SpreadsheetRowProps> = ({
         )}
       </div>
 
-      {/* Weeks Checks */}
+      {/* Weeks Checks - Orange Borders */}
       <div className="flex w-56 md:w-80 flex-shrink-0">
         {participant.weeks.map((paid, weekIndex) => (
           <div key={weekIndex} className="flex-1 border-r border-orange-200 flex justify-center items-center py-1">

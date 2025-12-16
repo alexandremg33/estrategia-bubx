@@ -6,14 +6,14 @@ export interface Participant {
   id: string;
   name: string;
   whatsapp: string;
-  weeks: [boolean, boolean, boolean, boolean, boolean]; // Fixed 5 weeks for simplicity
+  weeks: [boolean, boolean, boolean, boolean, boolean]; // Fixed 5 weeks
 }
 
 export interface Stats {
   totalParticipants: number;
   totalPaid: number;
   totalPending: number;
-  revenuePotential: number; // Assuming a standard value, or just %
+  revenuePotential: number;
 }
 
 export type SortField = 'name' | 'whatsapp' | 'status';
